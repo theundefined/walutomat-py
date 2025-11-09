@@ -55,6 +55,7 @@ class WalutomatClient:
         signature = self.private_key.sign(message, padding.PKCS1v15(), hashes.SHA256())
         return base64.b64encode(signature).decode("utf-8")
 
+    # noqa: C901
     def _make_request(
         self,
         method: str,

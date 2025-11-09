@@ -3,6 +3,7 @@ import sys
 from dotenv import load_dotenv
 from walutomat_py import WalutomatClient, WalutomatAPIError
 
+
 def main():
     """
     Example script to fetch and display wallet balances from Walutomat.
@@ -38,16 +39,11 @@ def main():
 
         print("\n--- Your Wallet Balances ---")
         for balance in balances:
-            currency = balance.get('currency')
-            total = balance.get('balanceTotal')
-            available = balance.get('balanceAvailable')
-            reserved = balance.get('balanceReserved')
-            print(
-                f"Currency: {currency}\n"
-                f"  Total:     {total}\n"
-                f"  Available: {available}\n"
-                f"  Reserved:  {reserved}\n"
-            )
+            currency = balance.get("currency")
+            total = balance.get("balanceTotal")
+            available = balance.get("balanceAvailable")
+            reserved = balance.get("balanceReserved")
+            print(f"Currency: {currency}\n  Total:     {total}\n  Available: {available}\n  Reserved:  {reserved}\n")
         print("--------------------------")
 
     except WalutomatAPIError as e:
@@ -59,6 +55,7 @@ def main():
     except Exception as e:
         print(f"\nAn unexpected error occurred: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
