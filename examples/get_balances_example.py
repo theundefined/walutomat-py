@@ -1,7 +1,9 @@
 import os
 import sys
+
 from dotenv import load_dotenv
-from walutomat_py import WalutomatClient, WalutomatAPIError
+
+from walutomat_py import WalutomatAPIError, WalutomatClient
 
 
 def main():
