@@ -39,6 +39,9 @@ dev = [
     "ruff",
     "black",
     "mypy",
+    "cryptography",
+    "requests-mock",
+    "python-dotenv",
 ]
 
 [tool.ruff]
