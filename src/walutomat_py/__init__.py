@@ -5,7 +5,7 @@
 A Python library for the Walutomat.pl API
 """
 
-__version__ = "0.0.1"
+__version__ = "0.0.20251110.201342"
 
 from .client import WalutomatAPIError, WalutomatClient
 
