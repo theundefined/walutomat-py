@@ -16,8 +16,9 @@ jobs:
     name: Test and Lint
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - name: Checkout repository
@@ -39,6 +40,7 @@ jobs:
           ruff check .
 
       - name: Test with pytest
+        continue-on-error: ${{ matrix.python-version == '3.13' || matrix.python-version == '3.14' }}
         run: |
           pip install pytest
           pytest
