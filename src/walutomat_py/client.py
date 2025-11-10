@@ -154,6 +154,34 @@ class WalutomatClient:
         path = "/account/balances"
         return self._make_request("GET", path, signed=False)
 
+    @staticmethod
+    def get_public_rate(currency_pair: str) -> Dict[str, Any]:
+        """
+        Returns current public market rate for a given currency pair.
+        This endpoint is public and does not require an API key.
+        Note: currency_pair format is with an underscore, e.g., "EUR_PLN".
+        """
+        url = f"https://user.walutomat.pl/api/public/marketPriceVolumes/{currency_pair}?brief=true"
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+
+            # ASK is what the market is selling the base currency for (our buy price)
+            best_ask = data.get(f"ASK_{currency_pair}", [{}])[0].get("rate")
+            # BID is what the market is buying the base currency for (our sell price)
+            best_bid = data.get(f"BID_{currency_pair}", [{}])[0].get("rate")
+
+            if not best_ask or not best_bid:
+                raise WalutomatAPIError(f"Could not parse rate data from public endpoint for {currency_pair}")
+
+            return {"buyRate": best_ask, "sellRate": best_bid}
+
+        except requests.exceptions.RequestException as req_err:
+            raise WalutomatAPIError(f"An unexpected request error occurred: {req_err}") from req_err
+        except (KeyError, IndexError, json.JSONDecodeError) as e:
+            raise WalutomatAPIError(f"Failed to parse public rate data: {e}") from e
+
     def get_history(
         self,
         date_from: Optional[str] = None,

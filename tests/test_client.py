@@ -174,3 +174,31 @@ def test_get_history_success(requests_mock, client_with_private_key, rsa_key_pai
     expected_signature_b64 = base64.b64encode(expected_signature).decode("utf-8")
 
     assert request_headers["X-API-Signature"] == expected_signature_b64
+
+
+def test_get_public_rate_success(requests_mock):
+    """Test successful fetching of public exchange rates."""
+    currency_pair = "EUR_PLN"
+    mock_response = {
+        "ASK_EUR_PLN": [{"rate": "4.3123"}],
+        "BID_EUR_PLN": [{"rate": "4.3021"}],
+    }
+    url = f"https://user.walutomat.pl/api/public/marketPriceVolumes/{currency_pair}?brief=true"
+    requests_mock.get(url, json=mock_response, status_code=200)
+
+    rates = WalutomatClient.get_public_rate(currency_pair)
+
+    assert rates["buyRate"] == "4.3123"
+    assert rates["sellRate"] == "4.3021"
+
+
+def test_get_public_rate_api_error(requests_mock):
+    """Test API error handling for public exchange rates."""
+    currency_pair = "FAKE_PAIR"
+    url = f"https://user.walutomat.pl/api/public/marketPriceVolumes/{currency_pair}?brief=true"
+    requests_mock.get(url, status_code=404, text="Not Found")
+
+    with pytest.raises(WalutomatAPIError) as excinfo:
+        WalutomatClient.get_public_rate(currency_pair)
+
+    assert "An unexpected request error occurred" in str(excinfo.value)

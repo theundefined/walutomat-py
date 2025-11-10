@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "walutomat-py"
-version = "0.0.1"
-description = "A Python library for the Walutomat.pl API"
+version = "0.0.2"
+description = "An unofficial Python library for the Walutomat.pl API"
 readme = "README.md"
 requires-python = ">=3.9"
 license = "MIT"
@@ -46,6 +46,8 @@ dev = [
 
 [tool.ruff]
 line-length = 120
+
+[tool.ruff.lint]
 select = ["E", "W", "F", "I", "C", "B"]
 ignore = ["B008", "C901"]
 
