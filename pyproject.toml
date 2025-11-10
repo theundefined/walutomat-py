@@ -11,6 +11,7 @@ license = "MIT"
 authors = [
     { name = "Andrzej Dopierala", email = "undefine@aramin.net" },
 ]
+dynamic = ["version"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
