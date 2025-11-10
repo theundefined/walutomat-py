@@ -4,7 +4,6 @@ build-backend = "hatchling.build"
 
 [project]
 name = "walutomat-py"
-version = "0.0.2"
 description = "An unofficial Python library for the Walutomat.pl API"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -64,3 +63,6 @@ ignore_missing_imports = true
 
 [tool.hatch.scripts]
 format = "ruff format . && ruff check . --fix"
+
+[tool.hatch.version]
+path = "src/walutomat_py/__init__.py"
