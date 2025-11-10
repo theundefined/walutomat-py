@@ -1,11 +1,10 @@
-name: Publish Python Package to PyPI
+name: Test, Build and Publish
 
 on:
   push:
     branches:
       - main
-    tags:
-      - 'v*.*.*'
+      - develop
   pull_request:
     branches:
       - main
@@ -46,30 +45,49 @@ jobs:
           pytest
 
   publish:
-    name: Build and Publish to PyPI
+    name: Build, Publish and Tag
     needs: test
     runs-on: ubuntu-latest
-    # This job will only run when a new tag is pushed
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: write # Needed to push a commit and tag
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Fetch all history so that git can commit and tag
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
-      - name: Install build dependencies
-        run: python -m pip install --upgrade build
+      - name: Install Hatch
+        run: python -m pip install --upgrade hatch
 
+      - name: Set version
+        id: set_version
+        run: |
+          VERSION="0.0.$(date -u +'%Y%m%d.%H%M%S')"
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+          hatch version ${VERSION}
+      
       - name: Build package
-        run: python -m build
+        run: hatch build
 
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-          # The user needs to create a secret in GitHub repository settings
-          # named PYPI_API_TOKEN
+
+      - name: Commit, Tag and Push
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add pyproject.toml
+          git commit -m "chore: Bump version to ${{ steps.set_version.outputs.VERSION }} [skip ci]"
+          git tag "v${{ steps.set_version.outputs.VERSION }}"
+          git push
+          git push --tags
